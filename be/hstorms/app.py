@@ -21,7 +21,7 @@ def create_app():
 
 def register_blueprints(app):
     from .controller import hurricane_c
-    app.register_blueprint(hurricane_c.blueprint, url_prefix='/hurricane')
+    app.register_blueprint(hurricane_c.blueprint, url_prefix='/hurricanes')
 
 
 def register_extensions(app):
