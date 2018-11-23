@@ -27,9 +27,8 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
-    import {FIND_CLOSEST_H} from "../store/actions.type";
-    import {HurricaneService} from '@/common/api.service';
+    import {mapGetters} from 'vuex';
+    import {FIND_CLOSEST_H} from '../store/actions.type';
 
     export default {
         name: 'SearchPoint',

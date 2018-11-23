@@ -1,11 +1,12 @@
-import BootstrapVue from 'bootstrap-vue'
+import Vue from 'vue';
+import BootstrapVue from 'bootstrap-vue';
 import {L} from 'vue2-leaflet';
-import App from './App.vue'
-import ApiService from "@/common/api.service";
-import store from './store'
+import App from './App.vue';
+import ApiService from '@/common/api.service';
+import store from './store';
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 

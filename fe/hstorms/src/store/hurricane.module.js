@@ -1,6 +1,6 @@
 import {FIND_CLOSEST_H} from './actions.type';
-import {ADD_GEO_LAYERS, SET_MARKER} from "./mutations.type";
-import {HurricaneService} from "@/common/api.service";
+import {ADD_GEO_LAYERS, SET_MARKER} from './mutations.type';
+import {HurricaneService} from '@/common/api.service';
 
 const state = {
     geojson_layers: [],

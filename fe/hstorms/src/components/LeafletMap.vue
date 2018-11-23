@@ -25,11 +25,11 @@
         LMarker,
         LTileLayer
     } from 'vue2-leaflet';
-    import {mapGetters} from "vuex";
-    import {SET_MARKER} from "../store/mutations.type";
+    import {mapGetters} from 'vuex';
+    import {SET_MARKER} from '../store/mutations.type';
 
     export default {
-        name: "Map",
+        name: 'LeafletMap',
         components: {
             LMap,
             LTileLayer,

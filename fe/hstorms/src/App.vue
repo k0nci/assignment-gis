@@ -12,8 +12,8 @@
 </template>
 
 <script>
-    import LeafletMap from './components/LeafletMap'
-    import SearchPoint from './components/SearchPoint'
+    import LeafletMap from './components/LeafletMap';
+    import SearchPoint from './components/SearchPoint';
 
     export default {
         name: 'app',
