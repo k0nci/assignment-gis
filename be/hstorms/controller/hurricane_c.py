@@ -10,13 +10,19 @@ blueprint = Blueprint('main', __name__)
 
 @blueprint.route('/point', methods=['GET'])
 async def get_closest():
-    if any(x not in request.args for x in ['lat', 'lon']):
+    required_params = ['lat', 'lon']
+    if any(x not in request.args for x in required_params):
         abort(400)
 
     point = {
         'lat': float(request.args['lat']),
         'lon': float(request.args['lon'])
     }
+
+    if 'distance' in request.args:
+        distance = float(request.args['distance'])
+        data = await hurricane_r.find_dwithin(point, distance)
+        return jsonify(data)
 
     data = await hurricane_r.find_closest(point)
     return jsonify(data)
