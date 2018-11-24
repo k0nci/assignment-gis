@@ -1,4 +1,4 @@
-import {FIND_CLOSEST_H} from './actions.type';
+import {FIND_BY_POINT} from './actions.type';
 import {ADD_GEO_LAYERS, SET_MARKER} from './mutations.type';
 import {HurricaneService} from '@/common/api.service';
 
@@ -20,7 +20,7 @@ const getters = {
 };
 
 const actions = {
-    [FIND_CLOSEST_H]({commit}, params) {
+    [FIND_BY_POINT]({commit}, params) {
         return HurricaneService.query('point', params)
             .then(response => {
                 commit(ADD_GEO_LAYERS, response.data);

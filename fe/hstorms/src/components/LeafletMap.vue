@@ -12,7 +12,8 @@
                         layer-type="overlay"/>
             <l-marker
                     v-if="marker.lat !== undefined && marker.lon !== undefined"
-                    :lat-lng="[marker.lat, marker.lon]"/>
+                    :lat-lng="[marker.lat, marker.lon]"
+                    @click="unsetMarker"/>
         </l-map>
     </div>
 </template>
@@ -60,6 +61,12 @@
                 this.$store.commit(SET_MARKER, {
                     lat: event.latlng.lat,
                     lon: event.latlng.lng
+                })
+            },
+            unsetMarker: function () {
+                this.$store.commit(SET_MARKER, {
+                    lat: undefined,
+                    lon: undefined
                 })
             }
         },

@@ -1,1 +1,1 @@
-export const FIND_CLOSEST_H = 'findClosestHurricane';
+export const FIND_BY_POINT = 'findByPoint';
