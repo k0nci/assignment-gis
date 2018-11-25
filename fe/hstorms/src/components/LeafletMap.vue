@@ -16,7 +16,7 @@
                         :optionsStyle="occStyleFunction"
                         layer-type="overlay"/>
             <l-marker
-                    v-if="marker.lat !== undefined && marker.lon !== undefined"
+                    v-if="marker.lat && marker.lon"
                     :lat-lng="[marker.lat, marker.lon]"
                     @click="unsetMarker"/>
         </l-map>
@@ -36,21 +36,21 @@
 
     function getOccColor(occurrence) {
         switch (true) {
-            case (occurrence > 200):
+            case (occurrence > 105):
                 return '#800026';
-            case (occurrence > 130):
+            case (occurrence > 65):
                 return '#BD0026';
-            case (occurrence > 70):
+            case (occurrence > 40):
                 return '#E31A1C';
-            case (occurrence > 50):
+            case (occurrence > 25):
                 return '#FC4E2A';
-            case (occurrence > 30):
+            case (occurrence > 15):
                 return '#FD8D3C';
-            case (occurrence > 20):
-                return '#FEB24C';
             case (occurrence > 10):
+                return '#FEB24C';
+            case (occurrence > 5):
                 return '#FED976';
-            case (occurrence <= 10):
+            case (occurrence <= 5 && occurrence > 0):
                 return '#FFEDA0';
             default:
                 return '#FFFFFF';
@@ -89,19 +89,16 @@
                 this.$store.commit(SET_MARKER, {
                     lat: event.latlng.lat,
                     lon: event.latlng.lng
-                })
+                });
             },
             unsetMarker: function () {
-                this.$store.commit(SET_MARKER, {
-                    lat: undefined,
-                    lon: undefined
-                })
+                this.$store.commit(SET_MARKER, {});
             },
             occStyleFunction: function (feature) {
                 return {
                     fillColor: getOccColor(feature.properties.occurrence),
                     weight: 2,
-                    opacity: 1,
+                    opacity: feature.properties.occurrence > 0 ? 1 : 0,
                     color: 'white',
                     dashArray: '3',
                     fillOpacity: 0.7
