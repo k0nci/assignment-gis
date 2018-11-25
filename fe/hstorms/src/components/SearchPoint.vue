@@ -1,5 +1,5 @@
 <template>
-    <div class="border border-primary mt-3 p-2">
+    <div>
         <div class="form-group row">
             <label for="latitude"
                    class="col-sm-3 col-form-label col-form-label-sm">Lat:</label>
@@ -34,7 +34,8 @@
                 <div class="col-sm-9">
                     <input type="number" class="form-control form-control-sm"
                            id="distance" placeholder="distance"
-                           v-model="distance" :disabled="!searchInDistance">
+                           v-model.number.lazy="distance"
+                           :disabled="!searchInDistance">
                 </div>
             </div>
         </div>

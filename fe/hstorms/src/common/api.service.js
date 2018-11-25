@@ -9,7 +9,7 @@ const ApiService = {
         Vue.axios.defaults.baseURL = API_URL;
     },
 
-    get(resource, slug = "") {
+    get(resource, slug = '') {
         return Vue.axios.get(`${resource}/${slug}`).catch(error => {
             throw new Error(`[RWV] ApiService ${error}`);
         });
@@ -27,6 +27,12 @@ export const HurricaneService = {
         return ApiService.query(`hurricanes/${type}`, {
             params: params
         });
+    }
+};
+
+export const CountryService = {
+    get(slug = '') {
+        return ApiService.get('countries', slug);
     }
 };
 

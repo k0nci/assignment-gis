@@ -6,9 +6,14 @@
             <l-control-layers/>
             <l-tile-layer :url="url"
                           :attribution="attribution"/>
-            <l-geo-json v-for="(item, index) in geojson_layers"
+            <l-geo-json v-for="(item, index) in hurricane_layers"
                         :key="index"
                         :geojson="item"
+                        layer-type="overlay"/>
+            <l-geo-json v-for="(item, index) in occurrence_layers"
+                        :key="index"
+                        :geojson="item"
+                        :optionsStyle="occStyleFunction"
                         layer-type="overlay"/>
             <l-marker
                     v-if="marker.lat !== undefined && marker.lon !== undefined"
@@ -28,6 +33,29 @@
     } from 'vue2-leaflet';
     import {mapGetters} from 'vuex';
     import {SET_MARKER} from '../store/mutations.type';
+
+    function getOccColor(occurrence) {
+        switch (true) {
+            case (occurrence > 200):
+                return '#800026';
+            case (occurrence > 130):
+                return '#BD0026';
+            case (occurrence > 70):
+                return '#E31A1C';
+            case (occurrence > 50):
+                return '#FC4E2A';
+            case (occurrence > 30):
+                return '#FD8D3C';
+            case (occurrence > 20):
+                return '#FEB24C';
+            case (occurrence > 10):
+                return '#FED976';
+            case (occurrence <= 10):
+                return '#FFEDA0';
+            default:
+                return '#FFFFFF';
+        }
+    }
 
     export default {
         name: 'LeafletMap',
@@ -68,10 +96,20 @@
                     lat: undefined,
                     lon: undefined
                 })
+            },
+            occStyleFunction: function (feature) {
+                return {
+                    fillColor: getOccColor(feature.properties.occurrence),
+                    weight: 2,
+                    opacity: 1,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0.7
+                };
             }
         },
         computed: {
-            ...mapGetters(['geojson_layers', 'marker'])
+            ...mapGetters(['hurricane_layers', 'marker', 'occurrence_layers'])
         }
     }
 </script>

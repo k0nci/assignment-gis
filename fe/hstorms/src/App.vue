@@ -2,7 +2,8 @@
     <div id="app" class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-3">
-                <search-point/>
+                <search-point class="border border-primary mt-3 p-2"/>
+                <country-heatmap class="border border-primary mt-3 p-2"/>
             </div>
             <div class="col-9">
                 <leaflet-map/>
@@ -14,12 +15,14 @@
 <script>
     import LeafletMap from './components/LeafletMap';
     import SearchPoint from './components/SearchPoint';
+    import CountryHeatmap from './components/CountryHeatmap';
 
     export default {
         name: 'app',
         components: {
             LeafletMap,
-            SearchPoint
+            SearchPoint,
+            CountryHeatmap
         }
     }
 </script>
