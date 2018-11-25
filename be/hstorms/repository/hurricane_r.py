@@ -36,16 +36,15 @@ async def find_dwithin(point, distance):
 
 
 async def count_occurrence_in_region(country):
-    query = """SELECT p.name, 
-                      count(*) as occurrence, 
-                      st_asgeojson(st_multi(st_union(p.way))) as geojson
-               FROM country_polygons cp
-               JOIN planet_osm_polygon p ON st_within(p.way, cp.geometry)
-               JOIN hurricane_lines hl ON st_intersects(p.way, hl.way)
-               WHERE cp.ids = $1::bigint[]
-                 AND p.boundary = 'administrative'
-                 AND p.admin_level = '4'
-               GROUP BY p.name"""
+    query = """SELECT cr.region_name as name,
+                       count(hl.name) as occurrence,
+                       st_asgeojson(
+                           st_multi(st_union(cr.region_geom))) as geojson
+                FROM country_region_polygons cr
+                LEFT JOIN hurricane_lines hl
+                    ON st_intersects(cr.region_geom, hl.way)
+                WHERE cr.country_osm_ids = $1::bigint[]
+                GROUP BY cr.region_name"""
 
     data = await database.fetch(query, country)
 
@@ -64,11 +63,11 @@ async def count_occurrence_in_region(country):
 
 async def count_occurrence_in_country(country):
     query = """SELECT cp.name, 
-                      count(*) as occurrence, 
-                      st_asgeojson(st_multi(st_union(cp.geometry))) as geojson
+                      count(hl.name) as occurrence, 
+                      st_asgeojson(st_multi(st_union(cp.geom))) as geojson
                FROM country_polygons cp
-               JOIN hurricane_lines hl ON st_intersects(cp.geometry, hl.way)
-               WHERE cp.ids = $1::bigint[]
+               LEFT JOIN hurricane_lines hl ON st_intersects(cp.geom, hl.way)
+               WHERE cp.osm_ids = $1::bigint[]
                GROUP BY cp.name"""
 
     data = await database.fetchone(query, country)
