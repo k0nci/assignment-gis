@@ -4,14 +4,15 @@ from quart import jsonify
 from quart import request
 
 from repository import hurricane_r
+from util import contains_params
 
-blueprint = Blueprint('main', __name__)
+blueprint = Blueprint('hurricanes', __name__)
 
 
 @blueprint.route('/point', methods=['GET'])
-async def get_closest():
+async def get_by_point():
     required_params = ['lat', 'lon']
-    if any(x not in request.args for x in required_params):
+    if not contains_params(request, required_params):
         abort(400)
 
     point = {
@@ -25,4 +26,23 @@ async def get_closest():
         return jsonify(data)
 
     data = await hurricane_r.find_closest(point)
+    return jsonify(data)
+
+
+@blueprint.route('/occurrence', methods=['GET'])
+async def count_occurrence_for_country():
+    required_params = ['country_ids[]']
+    if not contains_params(request, required_params):
+        abort(400)
+
+    country = request.args['country_ids[]']
+    if isinstance(country, str):
+        country = [int(country)]
+    else:
+        country = [int(x) for x in country]
+
+    data = await hurricane_r.count_occurrence_in_region(country)
+    if not data:
+        data = await hurricane_r.count_occurrence_in_country(country)
+
     return jsonify(data)
