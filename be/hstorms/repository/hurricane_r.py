@@ -35,25 +35,31 @@ async def find_dwithin(point, distance):
     return [to_geojson(geometry=loads(x['geojson'])) for x in data]
 
 
-async def count_occurrence_in_region(country):
-    query = """SELECT cr.region_name as name,
-                       count(hl.name) as occurrence,
-                       st_asgeojson(
-                           st_multi(st_union(cr.region_geom))) as geojson
-                FROM country_region_polygons cr
-                LEFT JOIN hurricane_lines hl
-                    ON st_intersects(cr.region_geom, hl.way)
-                WHERE cr.country_osm_ids = $1::bigint[]
-                GROUP BY cr.region_name"""
+async def count_occurrence_in_region(country_id):
+    query = """WITH region_occurrence AS (
+                    SELECT crp.region_osm_id,
+                           count(hl.name) as occurrence
+                    FROM country_region_polygons crp
+                    LEFT JOIN hurricane_lines hl
+                        ON st_intersects(crp.region_geom, hl.way)
+                    WHERE crp.country_osm_id = $1::bigint
+                    GROUP BY crp.region_osm_id
+               )
+               SELECT cr.region_name,
+                      ro.occurrence,
+                      st_asgeojson(cr.region_geom) as geojson
+               FROM region_occurrence ro
+               JOIN country_region_polygons cr
+                    ON ro.region_osm_id = cr.region_osm_id"""
 
-    data = await database.fetch(query, country)
+    data = await database.fetch(query, country_id)
 
     if data is None:
         return []
 
     def parse(record):
         return to_geojson(
-            name=record['name'],
+            region_name=record['region_name'],
             occurrence=record['occurrence'],
             geometry=loads(record['geojson'])
         )
@@ -61,16 +67,16 @@ async def count_occurrence_in_region(country):
     return [parse(x) for x in data]
 
 
-async def count_occurrence_in_country(country):
+async def count_occurrence_in_country(country_id):
     query = """SELECT cp.name, 
                       count(hl.name) as occurrence, 
                       st_asgeojson(st_multi(st_union(cp.geom))) as geojson
                FROM country_polygons cp
                LEFT JOIN hurricane_lines hl ON st_intersects(cp.geom, hl.way)
-               WHERE cp.osm_ids = $1::bigint[]
+               WHERE cp.osm_id = $1::bigint
                GROUP BY cp.name"""
 
-    data = await database.fetchone(query, country)
+    data = await database.fetchone(query, country_id)
 
     if data is None:
         return {}

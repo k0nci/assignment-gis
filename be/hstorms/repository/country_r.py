@@ -2,7 +2,7 @@ import database
 
 
 async def find_countries():
-    query = """SELECT cp.name, cp.osm_ids
+    query = """SELECT cp.name, cp.osm_id
                FROM country_polygons cp"""
     data = await database.fetch(query)
 
@@ -12,6 +12,6 @@ async def find_countries():
     def parse_country(country):
         return {
             'name': country['name'],
-            'ids': country['osm_ids']
+            'id': country['osm_id']
         }
     return [parse_country(x) for x in data]

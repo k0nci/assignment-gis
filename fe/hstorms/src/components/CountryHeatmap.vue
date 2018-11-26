@@ -7,7 +7,7 @@
                     v-model="selectedCountry">
                 <option v-for="(item, index) in countries"
                         :key="index"
-                        :value="item.ids">
+                        :value="item.id">
                     {{ item.name }}
                 </option>
             </select>
@@ -33,7 +33,7 @@
         methods: {
             search() {
                 this.$store.dispatch(COUNT_OCC_BY_COUNTRY, {
-                    country_ids: this.selectedCountry
+                    country_id: this.selectedCountry
                 });
             }
         },

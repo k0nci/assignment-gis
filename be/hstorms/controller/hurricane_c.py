@@ -31,18 +31,13 @@ async def get_by_point():
 
 @blueprint.route('/occurrence', methods=['GET'])
 async def count_occurrence_for_country():
-    required_params = ['country_ids[]']
+    required_params = ['country_id']
     if not contains_params(request, required_params):
         abort(400)
 
-    country = request.args['country_ids[]']
-    if isinstance(country, str):
-        country = [int(country)]
-    else:
-        country = [int(x) for x in country]
-
-    data = await hurricane_r.count_occurrence_in_region(country)
+    country_id = int(request.args['country_id'])
+    data = await hurricane_r.count_occurrence_in_region(country_id)
     if not data:
-        data = await hurricane_r.count_occurrence_in_country(country)
+        data = await hurricane_r.count_occurrence_in_country(country_id)
 
     return jsonify(data)
