@@ -37,7 +37,7 @@ async def count_occurrence_for_country():
 
     country_id = int(request.args['country_id'])
     data = await hurricane_r.count_occurrence_in_region(country_id)
-    if not data:
+    if not data['features']:
         data = await hurricane_r.count_occurrence_in_country(country_id)
 
     return jsonify(data)

@@ -17,6 +17,7 @@
             <div id="occurrence_layers">
                 <l-geo-json v-for="(item, index) in occurrence_layers"
                             :key="index"
+                            :name="item.properties.countryName"
                             :geojson="item"
                             :optionsStyle="occStyleFunction"
                             layer-type="overlay"/>
@@ -57,21 +58,21 @@
 
     function getOccColor(occurrence) {
         switch (true) {
-            case (occurrence > 105):
+            case (occurrence > 7e-9):
                 return '#800026';
-            case (occurrence > 65):
+            case (occurrence > 6e-9):
                 return '#BD0026';
-            case (occurrence > 40):
+            case (occurrence > 5e-9):
                 return '#E31A1C';
-            case (occurrence > 25):
+            case (occurrence > 4e-9):
                 return '#FC4E2A';
-            case (occurrence > 15):
+            case (occurrence > 3e-9):
                 return '#FD8D3C';
-            case (occurrence > 10):
+            case (occurrence > 2e-9):
                 return '#FEB24C';
-            case (occurrence > 5):
+            case (occurrence > 1e-9):
                 return '#FED976';
-            case (occurrence <= 5 && occurrence > 0):
+            case (occurrence <= 1e-9 && occurrence > 0):
                 return '#FFEDA0';
             default:
                 return '#FFFFFF';
@@ -121,11 +122,11 @@
                 }
             },
             occStyleFunction: function (feature) {
-                let occurrence = feature.properties.occurrence;
+                let occurrence = feature.properties.occurrence / feature.properties.area;
                 return {
                     fillColor: getOccColor(occurrence),
                     weight: 2,
-                    opacity: occurrence > 0 ? 1 : 0,
+                    opacity: feature.properties.occurrence > 0 ? 1 : 0,
                     color: 'white',
                     dashArray: '3',
                     fillOpacity: 0.7

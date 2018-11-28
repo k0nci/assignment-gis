@@ -28,6 +28,7 @@ async def find_closest(point):
     features = [to_geojson(status=x['status'], geometry=loads(x['geojson']),
                            name=x['name'], hurricaneId='hurricane_id')
                 for x in data]
+
     return to_geojson_collection(features, name=data[0]['name'],
                                  hurricaneId=data[0]['hurricane_id'])
 
@@ -75,7 +76,9 @@ async def count_occurrence_in_region(country_id):
                     WHERE crp.country_osm_id = $1::bigint
                     GROUP BY crp.region_osm_id
                )
-               SELECT cr.region_name,
+               SELECT cr.country_name,
+                      cr.region_name,
+                      cr.region_area,
                       ro.occurrence,
                       st_asgeojson(cr.region_geom) as geojson
                FROM region_occurrence ro
@@ -84,34 +87,45 @@ async def count_occurrence_in_region(country_id):
 
     data = await database.fetch(query, country_id)
 
-    if data is None:
-        return []
+    if not data:
+        return to_geojson_collection([])
 
     def parse(record):
         return to_geojson(
-            region_name=record['region_name'],
+            regionName=record['region_name'],
+            area=record['region_area'],
             occurrence=record['occurrence'],
             geometry=loads(record['geojson'])
         )
 
-    return [parse(x) for x in data]
+    return to_geojson_collection([parse(x) for x in data],
+                                 countryName=data[0]['country_name'])
 
 
 async def count_occurrence_in_country(country_id):
-    query = """SELECT cp.name, 
-                      count(hl.name) as occurrence, 
-                      st_asgeojson(st_multi(st_union(cp.geom))) as geojson
-               FROM country_polygons cp
-               LEFT JOIN hurricane_lines hl ON st_intersects(cp.geom, hl.way)
-               WHERE cp.osm_id = $1::bigint
-               GROUP BY cp.name"""
+    query = """WITH occurrence AS (
+                  SELECT cp.osm_id,
+                         count(hl.id) as cnt
+                  FROM country_polygons cp
+                  LEFT JOIN hurricane_lines hl ON st_intersects(cp.geom, hl.way)
+                  WHERE cp.osm_id = $1::bigint
+                  GROUP BY cp.osm_id
+                )
+                SELECT cp.name as country_name,
+                       st_area(cp.geom::geography) as country_area,
+                       o.cnt as occurrence,
+                       st_asgeojson(cp.geom) as geojson
+                FROM country_polygons cp
+                JOIN occurrence o ON o.osm_id = cp.osm_id;"""
 
     data = await database.fetchone(query, country_id)
 
-    if data is None:
-        return {}
+    if not data:
+        return to_geojson({})
+
     return to_geojson(
-        name=data['name'],
+        countryName=data['country_name'],
+        area=data['country_area'],
         occurrence=data['occurrence'],
         geometry=loads(data['geojson'])
     )
