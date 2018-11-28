@@ -1,15 +1,20 @@
-def to_geojson(type='Feature', geometry=None, **kwargs):
+def to_geojson(geometry=None, **kwargs):
     if geometry is None:
         geometry = {}
+    # TODO load geometry if not json
 
-    res = {
-        'type': type,
-        'geometry': geometry
+    return {
+        'type': 'Feature',
+        'geometry': geometry,
+        'properties': {k: v for k, v in kwargs.items()}
     }
 
-    if kwargs:
-        res['properties'] = {k: v for k, v in kwargs.items()}
-    return res
+
+def to_geojson_collection(features=None):
+    return {
+        'type': 'FeatureCollection',
+        'features': features
+    }
 
 
 def contains_params(request, params):

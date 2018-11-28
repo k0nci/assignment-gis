@@ -2,8 +2,8 @@
     <div id="app" class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-3">
-                <search-point class="border border-primary mt-3 p-2"/>
-                <country-heatmap class="border border-primary mt-3 p-2"/>
+                <search-point class="border border-primary rounded mt-3 p-2"/>
+                <country-heatmap class="border border-primary rounded mt-3 p-2"/>
             </div>
             <div class="col-9">
                 <leaflet-map/>

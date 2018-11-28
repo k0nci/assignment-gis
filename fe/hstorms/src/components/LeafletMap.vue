@@ -6,15 +6,20 @@
             <l-control-layers/>
             <l-tile-layer :url="url"
                           :attribution="attribution"/>
-            <l-geo-json v-for="(item, index) in hurricane_layers"
-                        :key="index"
-                        :geojson="item"
-                        layer-type="overlay"/>
-            <l-geo-json v-for="(item, index) in occurrence_layers"
-                        :key="index"
-                        :geojson="item"
-                        :optionsStyle="occStyleFunction"
-                        layer-type="overlay"/>
+            <div id="hurricane_layers">
+                <l-geo-json v-for="(item, index) in hurricane_layers"
+                            :key="index"
+                            :geojson="item"
+                            :optionsStyle="hurricaneStyleFunction"
+                            layer-type="overlay"/>
+            </div>
+            <div id="occurrence_layers">
+                <l-geo-json v-for="(item, index) in occurrence_layers"
+                            :key="index"
+                            :geojson="item"
+                            :optionsStyle="occStyleFunction"
+                            layer-type="overlay"/>
+            </div>
             <l-marker
                     v-if="marker.lat && marker.lon"
                     :lat-lng="[marker.lat, marker.lon]"
@@ -33,6 +38,21 @@
     } from 'vue2-leaflet';
     import {mapGetters} from 'vuex';
     import {SET_MARKER} from '../store/mutations.type';
+
+    function getHurricaneColor(status) {
+        switch (true) {
+            case (status === 'EX'):
+                return '#FED976';
+            case (status === 'TD'):
+                return '#FEB24C';
+            case (status === 'TS'):
+                return '#E31A1C';
+            case (status === 'HU'):
+                return '#800026';
+            default:
+                return '#FFEDA0';
+        }
+    }
 
     function getOccColor(occurrence) {
         switch (true) {
@@ -93,6 +113,11 @@
             },
             unsetMarker: function () {
                 this.$store.commit(SET_MARKER, {});
+            },
+            hurricaneStyleFunction: function(feature) {
+                return {
+                    color: getHurricaneColor(feature.properties.status)
+                }
             },
             occStyleFunction: function (feature) {
                 return {
