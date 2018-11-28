@@ -10,11 +10,15 @@ def to_geojson(geometry=None, **kwargs):
     }
 
 
-def to_geojson_collection(features=None):
-    return {
+def to_geojson_collection(features=None, **kwargs):
+    res = {
         'type': 'FeatureCollection',
         'features': features
     }
+
+    if kwargs:
+        res['properties'] = {k: v for k, v in kwargs.items()}
+    return res
 
 
 def contains_params(request, params):

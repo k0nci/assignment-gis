@@ -9,6 +9,7 @@
             <div id="hurricane_layers">
                 <l-geo-json v-for="(item, index) in hurricane_layers"
                             :key="index"
+                            :name="item.properties.name"
                             :geojson="item"
                             :optionsStyle="hurricaneStyleFunction"
                             layer-type="overlay"/>
@@ -120,10 +121,11 @@
                 }
             },
             occStyleFunction: function (feature) {
+                let occurrence = feature.properties.occurrence;
                 return {
-                    fillColor: getOccColor(feature.properties.occurrence),
+                    fillColor: getOccColor(occurrence),
                     weight: 2,
-                    opacity: feature.properties.occurrence > 0 ? 1 : 0,
+                    opacity: occurrence > 0 ? 1 : 0,
                     color: 'white',
                     dashArray: '3',
                     fillOpacity: 0.7

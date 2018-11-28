@@ -7,23 +7,29 @@ import database
 
 async def find_closest(point):
     query = """WITH line_distance AS (
-                SELECT hp.hurricane_id,
-                       st_distance(p.way, hp.way::geography) as distance
-                FROM hurricane_lines hp
-                       CROSS JOIN (SELECT st_setsrid(st_point($1, $2), 4326)::geography as way) p),
-                   min_distance_id AS (
-                     SELECT ld1.hurricane_id
-                     FROM line_distance ld1
-                     WHERE distance = (SELECT min(ld2.distance) FROM line_distance ld2))
-              SELECT hpl2.status, st_asgeojson(geom) as geojson
-              FROM hurricane_part_lines hpl2
-              JOIN min_distance_id md ON md.hurricane_id = hpl2.hurricane_id"""
+                  SELECT hl.hurricane_id,
+                         st_distance(p.way, hl.way::geography) as distance
+                  FROM hurricane_lines hl
+                         CROSS JOIN (SELECT st_setsrid(st_point($1, $2), 4326)::geography as way) p),
+                     min_distance_id AS (
+                       SELECT ld1.hurricane_id
+                       FROM line_distance ld1
+                       WHERE distance = (SELECT min(ld2.distance) FROM line_distance ld2))
+                SELECT hpl.hurricane_id,
+                       h.name,
+                       hpl.status,
+                       st_asgeojson(geom) as geojson
+                FROM hurricane_part_lines hpl
+                JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
+                JOIN hurricanes h ON h.id = hpl.hurricane_id"""
 
     data = await database.fetch(query, point['lon'], point['lat'])
 
-    features = [to_geojson(status=x['status'], geometry=loads(x['geojson']))
+    features = [to_geojson(status=x['status'], geometry=loads(x['geojson']),
+                           name=x['name'], hurricaneId='hurricane_id')
                 for x in data]
-    return to_geojson_collection(features)
+    return to_geojson_collection(features, name=data[0]['name'],
+                                 hurricaneId=data[0]['hurricane_id'])
 
 
 async def find_dwithin(point, distance):
@@ -33,11 +39,13 @@ async def find_dwithin(point, distance):
                   WHERE st_dwithin(hl.way::geography,
                                    st_setsrid(st_point($1, $2), 4326)::geography,
                                    $3))
-                SELECT hpl.hurricane_id, 
+                SELECT hpl.hurricane_id,
+                       h.name,
                        hpl.status, 
                        st_asgeojson(hpl.geom) as geojson
                 FROM hurricane_part_lines hpl
-                JOIN in_distance i ON i.hurricane_id = hpl.hurricane_id"""
+                JOIN in_distance i ON i.hurricane_id = hpl.hurricane_id
+                JOIN hurricanes h ON h.id = hpl.hurricane_id"""
 
     data = await database.fetch(query, point['lon'], point['lat'], distance)
 
@@ -45,13 +53,16 @@ async def find_dwithin(point, distance):
     for x in data:
         hurricane_id = x['hurricane_id']
         feature = to_geojson(
-            hurricane_id=hurricane_id,
+            hurricaneId=hurricane_id,
+            name=x['name'],
             status=x['status'],
             geometry=loads(x['geojson'])
         )
         grouped[hurricane_id].append(feature)
 
-    return [to_geojson_collection(x) for x in grouped.values()]
+    return [to_geojson_collection(x, name=x[0]['properties']['name'],
+                                  hurricaneId=x[0]['properties']['hurricaneId'])
+            for x in grouped.values()]
 
 
 async def count_occurrence_in_region(country_id):
