@@ -62,7 +62,7 @@
             };
         },
         methods: {
-            search: function () {
+            search: () => {
                 if (this.searchInDistance) {
                     this.$store.dispatch(FIND_BY_POINT, {
                         ...this.marker,

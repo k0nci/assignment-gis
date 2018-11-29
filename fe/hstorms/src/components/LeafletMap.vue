@@ -19,6 +19,7 @@
                             :key="index"
                             :name="item.properties.countryName"
                             :geojson="item"
+                            :options="occurrence.options"
                             :optionsStyle="occStyleFunction"
                             layer-type="overlay"/>
             </div>
@@ -31,6 +32,7 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     import {
         LControlLayers,
         LGeoJson,
@@ -40,6 +42,7 @@
     } from 'vue2-leaflet';
     import {mapGetters} from 'vuex';
     import {SET_MARKER} from '../store/mutations.type';
+    import OccurrencePopup from './OccurencePopup';
 
     function getHurricaneColor(status) {
         switch (true) {
@@ -106,22 +109,45 @@
                 default: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
             }
         },
+        data() {
+            return {
+                occurrence: {
+                    options: {
+                        onEachFeature(feature, layer) {
+                            let name = feature.properties.regionName
+                                ? feature.properties.regionName
+                                : feature.properties.countryName;
+
+                            let PopupCont = Vue.extend(OccurrencePopup);
+                            let popup = new PopupCont({
+                                propsData: {
+                                    name: name,
+                                    occurrence: feature.properties.occurrence,
+                                    area: feature.properties.area
+                                }
+                            });
+                            layer.bindPopup(popup.$mount().$el);
+                        }
+                    }
+                }
+            }
+        },
         methods: {
-            setMarker: function (event) {
+            setMarker(event) {
                 this.$store.commit(SET_MARKER, {
                     lat: event.latlng.lat,
                     lon: event.latlng.lng
                 });
             },
-            unsetMarker: function () {
+            unsetMarker() {
                 this.$store.commit(SET_MARKER, {});
             },
-            hurricaneStyleFunction: function(feature) {
+            hurricaneStyleFunction(feature) {
                 return {
                     color: getHurricaneColor(feature.properties.status)
                 }
             },
-            occStyleFunction: function (feature) {
+            occStyleFunction(feature) {
                 let occurrence = feature.properties.occurrence / feature.properties.area;
                 return {
                     fillColor: getOccColor(occurrence),
