@@ -20,7 +20,7 @@ async def get_by_point():
         'lon': float(request.args['lon'])
     }
 
-    if 'distance' in request.args:
+    if 'distance' in request.args and float(request.args['distance']) > 0:
         distance = float(request.args['distance'])
         data = await hurricane_r.find_dwithin(point, distance)
         return jsonify(data)

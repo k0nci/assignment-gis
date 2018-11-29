@@ -14,7 +14,8 @@ const state = {
     occurrence_layers: [],
     marker: {
         lat: undefined,
-        lon: undefined
+        lon: undefined,
+        distance: 0
     }
 };
 

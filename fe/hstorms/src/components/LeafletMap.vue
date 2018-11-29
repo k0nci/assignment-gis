@@ -23,10 +23,16 @@
                             :optionsStyle="occStyleFunction"
                             layer-type="overlay"/>
             </div>
-            <l-marker
-                    v-if="marker.lat && marker.lon"
-                    :lat-lng="[marker.lat, marker.lon]"
-                    @click="unsetMarker"/>
+            <div id="marker">
+                <l-marker
+                        v-if="marker.lat && marker.lon"
+                        :lat-lng="[marker.lat, marker.lon]"
+                        @click="unsetMarker"/>
+                <l-circle
+                        v-if="marker.lat && marker.lon && marker.distance > 0"
+                        :lat-lng="[marker.lat, marker.lon]"
+                        :radius="marker.distance"/>
+            </div>
         </l-map>
     </div>
 </template>
@@ -38,7 +44,8 @@
         LGeoJson,
         LMap,
         LMarker,
-        LTileLayer
+        LTileLayer,
+        LCircle
     } from 'vue2-leaflet';
     import {mapGetters} from 'vuex';
     import {SET_MARKER} from '../store/mutations.type';
@@ -89,7 +96,8 @@
             LTileLayer,
             LGeoJson,
             LControlLayers,
-            LMarker
+            LMarker,
+            LCircle
         },
         props: {
             zoom: {
@@ -129,6 +137,13 @@
                             layer.bindPopup(popup.$mount().$el);
                         }
                     }
+                },
+                hurricane: {
+                    options: {
+                        onEachFeature(feature, layer) {
+
+                        }
+                    }
                 }
             }
         },
@@ -144,7 +159,8 @@
             },
             hurricaneStyleFunction(feature) {
                 return {
-                    color: getHurricaneColor(feature.properties.status)
+                    color: getHurricaneColor(feature.properties.status),
+                    weight: 8
                 }
             },
             occStyleFunction(feature) {
