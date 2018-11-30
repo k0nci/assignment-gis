@@ -19,13 +19,14 @@ async def get_by_point():
         'lat': float(request.args['lat']),
         'lon': float(request.args['lon'])
     }
+    year = int(request.args['year']) if 'year' in request.args else None
 
     if 'distance' in request.args and float(request.args['distance']) > 0:
         distance = float(request.args['distance'])
-        data = await hurricane_r.find_dwithin(point, distance)
+        data = await hurricane_r.find_dwithin(point, distance, year)
         return jsonify(data)
 
-    data = await hurricane_r.find_closest(point)
+    data = await hurricane_r.find_closest(point, year)
     return jsonify(data)
 
 
