@@ -1,12 +1,21 @@
 <template>
-    <div id="app" class="container-fluid h-100">
-        <div class="row h-100">
-            <div class="col-3">
-                <search-point class="border border-primary rounded mt-3 p-2"/>
-                <country-heatmap class="border border-primary rounded mt-3 p-2"/>
-            </div>
-            <div class="col-9">
-                <leaflet-map/>
+    <div id="app" class="h-100">
+        <nav class="navbar navbar-light bg-light">
+            <h1 class="navbar-brand mb-0">
+                PDT - HSTORMS
+            </h1>
+        </nav>
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col-lg-3">
+                    <search-point
+                            class="border border-primary rounded mt-3 p-2"/>
+                    <country-heatmap
+                            class="border border-primary rounded mt-3 p-2"/>
+                </div>
+                <div class="col-lg-9">
+                    <leaflet-map/>
+                </div>
             </div>
         </div>
     </div>
@@ -39,5 +48,9 @@
 
     html, body {
         height: 100%;
+    }
+
+    .leaflet-pane.leaflet-popup-pane {
+        font-size: 1.3em;
     }
 </style>

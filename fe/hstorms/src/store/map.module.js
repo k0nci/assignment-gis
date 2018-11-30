@@ -5,6 +5,8 @@ import {
 import {
     ADD_HUR_LAYERS,
     ADD_OCC_LAYERS,
+    CLEAR_HUR_LAYERS,
+    CLEAR_OCC_LAYERS,
     SET_MARKER
 } from './mutations.type';
 import {HurricaneService} from '@/common/api.service';
@@ -52,6 +54,12 @@ const mutations = {
     },
     [ADD_OCC_LAYERS](state, data) {
         state.occurrence_layers = state.occurrence_layers.concat(data);
+    },
+    [CLEAR_HUR_LAYERS](state) {
+        state.hurricane_layers = [];
+    },
+    [CLEAR_OCC_LAYERS](state) {
+        state.occurrence_layers = [];
     },
     [SET_MARKER](state, {lat, lon}) {
         state.marker.lat = lat;

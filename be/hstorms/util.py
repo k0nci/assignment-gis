@@ -1,3 +1,7 @@
+from quart import json
+from datetime import datetime
+
+
 def to_geojson(geometry=None, **kwargs):
     if geometry is None:
         geometry = {}
@@ -23,3 +27,12 @@ def to_geojson_collection(features=None, **kwargs):
 
 def contains_params(request, params):
     return all(x in request.args for x in params)
+
+
+class DatetimeJSONEncoder(json.JSONEncoder):
+
+    def default(self, object_):
+        if isinstance(object_, datetime):
+            return object_.isoformat()
+        else:
+            return super().default(object_)

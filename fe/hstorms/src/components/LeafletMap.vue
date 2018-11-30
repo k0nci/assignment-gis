@@ -11,6 +11,7 @@
                             :key="index"
                             :name="item.properties.name"
                             :geojson="item"
+                            :options="hurricane.options"
                             :optionsStyle="hurricaneStyleFunction"
                             layer-type="overlay"/>
             </div>
@@ -50,6 +51,7 @@
     import {mapGetters} from 'vuex';
     import {SET_MARKER} from '../store/mutations.type';
     import OccurrencePopup from './OccurencePopup';
+    import HurricanePopop from './HurricanePopup';
 
     function getHurricaneColor(status) {
         switch (true) {
@@ -141,7 +143,13 @@
                 hurricane: {
                     options: {
                         onEachFeature(feature, layer) {
-
+                            let PopupCont = Vue.extend(HurricanePopop);
+                            let popup = new PopupCont({
+                                propsData: {
+                                    hurricaneId: feature.properties.hurricaneId
+                                }
+                            });
+                            layer.bindPopup(popup.$mount().$el);
                         }
                     }
                 }
@@ -150,8 +158,8 @@
         methods: {
             setMarker(event) {
                 this.$store.commit(SET_MARKER, {
-                    lat: event.latlng.lat,
-                    lon: event.latlng.lng
+                    lat: event.latlng.lat.toFixed(5),
+                    lon: event.latlng.lng.toFixed(5)
                 });
             },
             unsetMarker() {

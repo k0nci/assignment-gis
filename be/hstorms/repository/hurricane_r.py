@@ -47,7 +47,7 @@ async def find_closest(point, year=None):
         data = await database.fetch(query, point['lon'], point['lat'])
 
     features = [to_geojson(status=x['status'], geometry=loads(x['geojson']),
-                           name=x['name'], hurricaneId='hurricane_id')
+                           name=x['name'], hurricaneId=x['hurricane_id'])
                 for x in data]
 
     return to_geojson_collection(features, name=data[0]['name'],
@@ -171,3 +171,25 @@ async def count_occurrence_in_country(country_id):
         occurrence=data['occurrence'],
         geometry=loads(data['geojson'])
     )
+
+
+async def get_hurricane_info(hurricane_id):
+    query = """SELECT hl.hurricane_id,
+                      hl.name,
+                      hl.start_date,
+                      hl.end_date,
+                      st_length(hl.way::geography) as length
+               FROM hurricane_lines hl
+               WHERE hl.hurricane_id = $1"""
+
+    data = await database.fetchone(query, hurricane_id)
+
+    if not data:
+        return {}
+    return {
+        'hurricaneId': data['hurricane_id'],
+        'hurricaneLength': data['length'],
+        'name': data['name'],
+        'startDate': data['start_date'],
+        'endDate': data['end_date']
+    }

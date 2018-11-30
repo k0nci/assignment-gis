@@ -42,3 +42,15 @@ async def count_occurrence_for_country():
         data = await hurricane_r.count_occurrence_in_country(country_id)
 
     return jsonify(data)
+
+
+@blueprint.route('/info', methods=['GET'])
+async def get_hurricane_info():
+    required_params = ['hurricaneId']
+    if not contains_params(request, required_params):
+        abort(400)
+
+    hurricane_id = int(request.args['hurricaneId'])
+
+    data = await hurricane_r.get_hurricane_info(hurricane_id)
+    return jsonify(data)

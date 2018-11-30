@@ -3,6 +3,7 @@ from quart import Quart
 from quart_cors import cors
 
 from config import Configuration
+from util import DatetimeJSONEncoder
 
 
 def create_app():
@@ -16,6 +17,7 @@ def create_app():
 
     register_blueprints(app)
     register_extensions(app)
+    register_encoders(app)
     return app
 
 
@@ -28,3 +30,7 @@ def register_blueprints(app):
 
 def register_extensions(app):
     cors(app)
+
+
+def register_encoders(app):
+    app.json_encoder = DatetimeJSONEncoder
