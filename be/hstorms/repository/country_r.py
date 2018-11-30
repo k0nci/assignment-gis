@@ -11,7 +11,7 @@ async def find_countries():
 
     def parse_country(country):
         return {
-            'name': country['name'],
-            'id': country['osm_id']
+            'text': country['name'],
+            'value': country['osm_id']
         }
     return [parse_country(x) for x in data]

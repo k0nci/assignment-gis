@@ -1,23 +1,21 @@
 <template>
     <div id="app" class="h-100">
-        <nav class="navbar navbar-light bg-light">
-            <h1 class="navbar-brand mb-0">
-                PDT - HSTORMS
-            </h1>
-        </nav>
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <div class="col-lg-3">
+        <b-navbar type="light" variant="light">
+            <b-navbar-brand>PDT - HSTORMS</b-navbar-brand>
+        </b-navbar>
+        <b-container class="h-100" fluid>
+            <b-row class="h-100">
+                <b-col lg="2">
                     <search-point
                             class="border border-primary rounded mt-3 p-2"/>
                     <country-heatmap
                             class="border border-primary rounded mt-3 p-2"/>
-                </div>
-                <div class="col-lg-9">
+                </b-col>
+                <b-col lg="10">
                     <leaflet-map/>
-                </div>
-            </div>
-        </div>
+                </b-col>
+            </b-row>
+        </b-container>
     </div>
 </template>
 

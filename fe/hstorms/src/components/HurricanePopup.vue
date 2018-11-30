@@ -1,20 +1,20 @@
 <template>
     <div>
         <h4>{{ hurricane.name }}</h4>
-        <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+        <b-list-group>
+            <b-list-group-item class="d-flex justify-content-between align-items-center">
                 Hurricane length:
-                <span class="badge badge-primary badge-pill">{{ hurricane.hurricaneLength }} km</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b-badge variant="primary" pill>{{ hurricane.hurricaneLength }} km</b-badge>
+            </b-list-group-item>
+            <b-list-group-item class="d-flex justify-content-between align-items-center">
                 Start date:
-                <span class="badge badge-primary badge-pill">{{ hurricane.startDate }}</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b-badge variant="primary" pill>{{ hurricane.startDate }}</b-badge>
+            </b-list-group-item>
+            <b-list-group-item class="d-flex justify-content-between align-items-center">
                 End date:
-                <span class="badge badge-primary badge-pill">{{ hurricane.endDate }}</span>
-            </li>
-        </ul>
+                <b-badge variant="primary" pill>{{ hurricane.endDate }}</b-badge>
+            </b-list-group-item>
+        </b-list-group>
     </div>
 </template>
 

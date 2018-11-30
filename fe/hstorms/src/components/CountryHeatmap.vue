@@ -1,26 +1,36 @@
 <template>
     <div>
-        <div class="form-group">
-            <label for="contrySelect">Select country</label>
-            <select class="form-control"
-                    id="contrySelect"
-                    v-model="selectedCountry">
-                <option v-for="(item, index) in countries"
-                        :key="index"
-                        :value="item.id">
-                    {{ item.name }}
-                </option>
-            </select>
-        </div>
-        <button type="button" class="btn btn-primary"
-                @click="search">Show
-        </button>
+        <h4>Occurrence in country</h4>
+        <b-form>
+            <b-form-group label="Select country"
+                          label-for="countrySelect">
+                <b-form-select
+                        id="contrySelect"
+                        v-model="selectedCountry"
+                        :options="countries">
+                </b-form-select>
+            </b-form-group>
+
+            <b-row>
+                <b-col>
+                    <b-button type="button" variant="primary" @click="search">
+                        Show
+                    </b-button>
+                </b-col>
+                <b-col>
+                    <b-button type="button" variant="primary"
+                              @click="clearOccurrence">Clear
+                    </b-button>
+                </b-col>
+            </b-row>
+        </b-form>
     </div>
 </template>
 
 <script>
     import {CountryService} from '../common/api.service';
-    import {COUNT_OCC_BY_COUNTRY} from "../store/actions.type";
+    import {CLEAR_OCC_LAYERS} from '../store/mutations.type';
+    import {COUNT_OCC_BY_COUNTRY} from '../store/actions.type';
 
     export default {
         name: 'CountryHeatmap',
@@ -35,6 +45,9 @@
                 this.$store.dispatch(COUNT_OCC_BY_COUNTRY, {
                     country_id: this.selectedCountry
                 });
+            },
+            clearOccurrence() {
+                this.$store.commit(CLEAR_OCC_LAYERS);
             }
         },
         mounted() {

@@ -2,37 +2,34 @@
     <div>
         <h2>Search by point</h2>
         <span>Click on map to put marker</span>
-        <form>
-            <div class="form-group row">
-                <label for="latitude"
-                       class="col-sm-3 col-form-label col-form-label-sm">Lat:</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control form-control-sm"
-                           id="latitude" placeholder="latitude"
-                           v-model="marker.lat" disabled>
-                </div>
-            </div>
+        <b-form>
+            <b-form-group :label-cols="3"
+                          label="Lat:"
+                          label-for="latitude"
+                          horizontal>
+                <b-form-input type="text"
+                              id="latitude" placeholder="latitude"
+                              v-model="marker.lat" disabled></b-form-input>
+            </b-form-group>
 
-            <div class="form-group row">
-                <label for="longitude"
-                       class="col-sm-3 col-form-label col-form-label-sm">Lon:</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control form-control-sm"
-                           id="longitude" placeholder="longitude"
-                           v-model="marker.lon" disabled>
-                </div>
-            </div>
+            <b-form-group :label-cols="3"
+                          label="Lon:"
+                          label-for="longitude"
+                          horizontal>
+                <b-form-input type="text"
+                              id="longitude" placeholder="longitude"
+                              v-model="marker.lon" disabled></b-form-input>
+            </b-form-group>
 
-            <div class="form-group row">
-                <label for="year"
-                       class="col-sm-3 col-form-label col-form-label-sm">Year:</label>
-                <div class="col-sm-9">
-                    <input type="number" class="form-control form-control-sm"
-                           id="year" placeholder="year"
-                           min="1851" max="2017"
-                           v-model.number.lazy="year">
-                </div>
-            </div>
+            <b-form-group :label-cols="3"
+                          label="Year:"
+                          label-for="year"
+                          horizontal>
+                <b-form-input type="number"
+                              id="year" placeholder="year"
+                              min="1851" max="2017"
+                              v-model.number.lazy="year"></b-form-input>
+            </b-form-group>
 
             <div>
                 <div class="form-group row">
@@ -40,10 +37,6 @@
                            class="col-sm-3 col-form-label col-form-label-sm">Distance:</label>
                     <div class="col-sm-9">
                         {{ distanceKm }}km
-                        <!--<input type="number" class="form-control form-control-sm"-->
-                        <!--id="distance" placeholder="distance"-->
-                        <!--v-model.number.lazy="distance"-->
-                        <!--:disabled="!searchInDistance">-->
                     </div>
                 </div>
                 <div class="ml-4 mr-4">
@@ -54,19 +47,19 @@
                 </div>
             </div>
 
-            <div class="form-group row mt-3">
-                <div class="col-sm-6">
-                    <button type="button" class="btn btn-primary"
+            <b-row class="mt-3">
+                <b-col>
+                    <b-button type="button" variant="primary"
                             @click="search">Search
-                    </button>
-                </div>
-                <div class="col-sm-6">
-                    <button type="button" class="btn btn-primary"
+                    </b-button>
+                </b-col>
+                <b-col>
+                    <b-button type="button" variant="primary"
                             @click="clearHurricanes">Clear
-                    </button>
-                </div>
-            </div>
-        </form>
+                    </b-button>
+                </b-col>
+            </b-row>
+        </b-form>
     </div>
 </template>
 
@@ -80,7 +73,7 @@
         computed: {
             ...mapGetters(['marker', 'hurricane_layers']),
             distanceKm() {
-                return (this.marker.distance/1000).toFixed(1);
+                return (this.marker.distance / 1000).toFixed(1);
             }
         },
         data() {
