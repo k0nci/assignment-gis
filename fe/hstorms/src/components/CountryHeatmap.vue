@@ -1,29 +1,31 @@
 <template>
     <div>
-        <h4>Occurrence in country</h4>
-        <b-form>
-            <b-form-group label="Select country"
-                          label-for="countrySelect">
-                <b-form-select
-                        id="contrySelect"
-                        v-model="selectedCountry"
-                        :options="countries">
-                </b-form-select>
-            </b-form-group>
+        <h2 class="bg-primary text-white">Occurrence in country</h2>
+        <div class="p-2">
+            <b-form>
+                <b-form-group label="Select country"
+                              label-for="countrySelect">
+                    <b-form-select
+                            id="contrySelect"
+                            v-model="selectedCountry"
+                            :options="countries">
+                    </b-form-select>
+                </b-form-group>
 
-            <b-row>
-                <b-col>
-                    <b-button type="button" variant="primary" @click="search">
-                        Show
-                    </b-button>
-                </b-col>
-                <b-col>
-                    <b-button type="button" variant="primary"
-                              @click="clearOccurrence">Clear
-                    </b-button>
-                </b-col>
-            </b-row>
-        </b-form>
+                <b-row>
+                    <b-col>
+                        <b-button type="button" variant="primary"
+                                  @click="search">Show
+                        </b-button>
+                    </b-col>
+                    <b-col>
+                        <b-button type="button" variant="danger"
+                                  @click="clearOccurrence">Clear
+                        </b-button>
+                    </b-col>
+                </b-row>
+            </b-form>
+        </div>
     </div>
 </template>
 

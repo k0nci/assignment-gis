@@ -1,4 +1,3 @@
-from quart.json import loads
 from collections import defaultdict
 
 from util import to_geojson, to_geojson_collection
@@ -7,47 +6,58 @@ import database
 
 async def find_closest(point, year=None):
     if year:
-        query = """WITH line_distance AS (
-                  SELECT hl.hurricane_id,
-                         st_distance(p.way, hl.way::geography) as distance
-                  FROM hurricane_lines hl
-                  CROSS JOIN (SELECT st_setsrid(st_point($1, $2), 4326)::geography as way) p
-                  WHERE extract(year from hl.start_date) = $3),
-                     min_distance_id AS (
-                       SELECT ld1.hurricane_id
-                       FROM line_distance ld1
-                       WHERE distance = (SELECT min(ld2.distance) FROM line_distance ld2))
-                SELECT hpl.hurricane_id,
-                       h.name,
-                       hpl.status,
-                       st_asgeojson(geom) as geojson
-                FROM hurricane_part_lines hpl
-                       JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
-                       JOIN hurricanes h ON h.id = hpl.hurricane_id"""
-
-        data = await database.fetch(query, point['lon'], point['lat'], year)
-    else:
-        query = """WITH line_distance AS (
+        query = """WITH point AS (
+                      SELECT st_setsrid(st_point($1, $2), 4326)::geography as way),
+                         line_distance AS (
                       SELECT hl.hurricane_id,
                              st_distance(p.way, hl.way::geography) as distance
                       FROM hurricane_lines hl
-                             CROSS JOIN (SELECT st_setsrid(st_point($1, $2), 4326)::geography as way) p),
+                      CROSS JOIN point p
+                      WHERE extract(year from hl.start_date) = $3),
                          min_distance_id AS (
-                           SELECT ld1.hurricane_id
+                           SELECT ld1.hurricane_id,
+                                  ld1.distance
                            FROM line_distance ld1
                            WHERE distance = (SELECT min(ld2.distance) FROM line_distance ld2))
                     SELECT hpl.hurricane_id,
                            h.name,
                            hpl.status,
-                           st_asgeojson(geom) as geojson
+                           md.distance as min_distance,
+                           st_asgeojson(hpl.geom) as geojson
+                    FROM hurricane_part_lines hpl
+                    JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
+                    JOIN hurricanes h ON h.id = hpl.hurricane_id"""
+
+        data = await database.fetch(query, point['lon'], point['lat'], year)
+    else:
+        query = """WITH point AS (
+                      SELECT st_setsrid(st_point($1, $2), 4326)::geography as way),
+                         line_distance AS (
+                      SELECT hl.hurricane_id,
+                             st_distance(p.way, hl.way::geography) as distance
+                      FROM hurricane_lines hl
+                      CROSS JOIN point p),
+                         min_distance_id AS (
+                           SELECT ld1.hurricane_id,
+                                  ld1.distance
+                           FROM line_distance ld1
+                           WHERE distance = (SELECT min(ld2.distance) FROM line_distance ld2))
+                    SELECT hpl.hurricane_id,
+                           h.name,
+                           hpl.status,
+                           md.distance as min_distance,
+                           st_asgeojson(hpl.geom) as geojson
                     FROM hurricane_part_lines hpl
                     JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
                     JOIN hurricanes h ON h.id = hpl.hurricane_id"""
 
         data = await database.fetch(query, point['lon'], point['lat'])
 
-    features = [to_geojson(status=x['status'], geometry=loads(x['geojson']),
-                           name=x['name'], hurricaneId=x['hurricane_id'])
+    features = [to_geojson(status=x['status'],
+                           geometry=x['geojson'],
+                           name=x['name'],
+                           hurricaneId=x['hurricane_id'],
+                           minDistance=x['min_distance'])
                 for x in data]
 
     return to_geojson_collection(features, name=data[0]['name'],
@@ -56,38 +66,51 @@ async def find_closest(point, year=None):
 
 async def find_dwithin(point, distance, year=None):
     if year:
-        query = """WITH in_distance AS (
-                          SELECT hl.hurricane_id
-                          FROM hurricane_lines hl
-                          WHERE st_dwithin(hl.way::geography,
-                                           st_setsrid(st_point($1, $2), 4326)::geography,
-                                           $3)
-                            AND extract(year from hl.start_date) = $4)
-                        SELECT hpl.hurricane_id,
-                               h.name,
-                               hpl.status,
-                               st_asgeojson(hpl.geom) as geojson
-                        FROM hurricane_part_lines hpl
-                        JOIN in_distance i ON i.hurricane_id = hpl.hurricane_id
-                        JOIN hurricanes h ON h.id = hpl.hurricane_id"""
+        query = """WITH point AS (
+                      SELECT st_setsrid(st_point($1, $2), 4326)::geography way),
+                         in_distance AS (
+                           SELECT hl.hurricane_id
+                           FROM hurricane_lines hl
+                           CROSS JOIN point p
+                           WHERE st_dwithin(hl.way::geography,
+                                            p.way,
+                                            $3)
+                              AND extract(year from hl.start_date) = $4)
+                    SELECT hpl.hurricane_id,
+                           h.name,
+                           hpl.status,
+                           min(st_distance(p.way, hpl.geom::geography)) 
+                                OVER (PARTITION BY hpl.hurricane_id) as min_distance,
+                           st_asgeojson(hpl.geom)                  as geojson
+                    FROM hurricane_part_lines hpl
+                    JOIN in_distance i ON i.hurricane_id = hpl.hurricane_id
+                    JOIN hurricanes h ON h.id = hpl.hurricane_id
+                    CROSS JOIN point p"""
 
         data = await database.fetch(query,
                                     point['lon'], point['lat'],
                                     distance, year)
+
     else:
-        query = """WITH in_distance AS (
-                      SELECT hl.hurricane_id
-                      FROM hurricane_lines hl
-                      WHERE st_dwithin(hl.way::geography,
-                                       st_setsrid(st_point($1, $2), 4326)::geography,
-                                       $3))
+        query = """WITH point AS (
+                      SELECT st_setsrid(st_point($1, $2), 4326)::geography way),
+                         in_distance AS (
+                           SELECT hl.hurricane_id
+                           FROM hurricane_lines hl
+                           CROSS JOIN point p
+                           WHERE st_dwithin(hl.way::geography,
+                                            p.way,
+                                            $3))
                     SELECT hpl.hurricane_id,
                            h.name,
-                           hpl.status, 
-                           st_asgeojson(hpl.geom) as geojson
+                           hpl.status,
+                           min(st_distance(p.way, hpl.geom::geography)) 
+                                OVER (PARTITION BY hpl.hurricane_id) as min_distance,
+                           st_asgeojson(hpl.geom)                  as geojson
                     FROM hurricane_part_lines hpl
                     JOIN in_distance i ON i.hurricane_id = hpl.hurricane_id
-                    JOIN hurricanes h ON h.id = hpl.hurricane_id"""
+                    JOIN hurricanes h ON h.id = hpl.hurricane_id
+                    CROSS JOIN point p"""
 
         data = await database.fetch(query,
                                     point['lon'], point['lat'], distance)
@@ -99,7 +122,8 @@ async def find_dwithin(point, distance, year=None):
             hurricaneId=hurricane_id,
             name=x['name'],
             status=x['status'],
-            geometry=loads(x['geojson'])
+            geometry=x['geojson'],
+            minDistance=x['min_distance']
         )
         grouped[hurricane_id].append(feature)
 
@@ -137,7 +161,7 @@ async def count_occurrence_in_region(country_id):
             regionName=record['region_name'],
             area=record['region_area'],
             occurrence=record['occurrence'],
-            geometry=loads(record['geojson'])
+            geometry=record['geojson']
         )
 
     return to_geojson_collection([parse(x) for x in data],
@@ -169,7 +193,7 @@ async def count_occurrence_in_country(country_id):
         countryName=data['country_name'],
         area=data['country_area'],
         occurrence=data['occurrence'],
-        geometry=loads(data['geojson'])
+        geometry=data['geojson']
     )
 
 

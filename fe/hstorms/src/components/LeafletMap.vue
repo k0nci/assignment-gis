@@ -49,7 +49,7 @@
         LCircle
     } from 'vue2-leaflet';
     import {mapGetters} from 'vuex';
-    import {SET_MARKER} from '../store/mutations.type';
+    import {SET_MARKER, CLEAR_HUR_LAYERS} from '../store/mutations.type';
     import OccurrencePopup from './OccurencePopup';
     import HurricanePopop from './HurricanePopup';
 
@@ -112,11 +112,11 @@
             },
             url: {
                 type: String,
-                default: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png'
+                default: 'https://api.mapbox.com/styles/v1/k0nci/cjp5vubh75a4m2sp6h17p8f7a/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiazBuY2kiLCJhIjoiY2pueG1pbW9iMGQ4aTNxbjc2dTV4NjRlNCJ9.UTeCfINkvmtamttjaBcvcA'
             },
             attribution: {
                 type: String,
-                default: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+                default: '&copy; <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a> &copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> <strong><a href=\'https://www.mapbox.com/map-feedback/\' target=\'_blank\'>Improve this map</a></strong>'
             }
         },
         data() {
@@ -146,7 +146,8 @@
                             let PopupCont = Vue.extend(HurricanePopop);
                             let popup = new PopupCont({
                                 propsData: {
-                                    hurricaneId: feature.properties.hurricaneId
+                                    hurricaneId: feature.properties.hurricaneId,
+                                    minDistance: feature.properties.minDistance
                                 }
                             });
                             layer.bindPopup(popup.$mount().$el);
@@ -157,12 +158,14 @@
         },
         methods: {
             setMarker(event) {
+                this.$store.commit(CLEAR_HUR_LAYERS);
                 this.$store.commit(SET_MARKER, {
                     lat: event.latlng.lat.toFixed(5),
                     lon: event.latlng.lng.toFixed(5)
                 });
             },
             unsetMarker() {
+                this.$store.commit(CLEAR_HUR_LAYERS);
                 this.$store.commit(SET_MARKER, {});
             },
             hurricaneStyleFunction(feature) {
@@ -189,6 +192,10 @@
     }
 </script>
 
-<style scoped>
+<style>
     @import '~leaflet/dist/leaflet.css';
+
+    .leaflet-pane.leaflet-popup-pane {
+        font-size: 1.3em;
+    }
 </style>

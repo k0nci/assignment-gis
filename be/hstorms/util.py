@@ -5,7 +5,8 @@ from datetime import datetime
 def to_geojson(geometry=None, **kwargs):
     if geometry is None:
         geometry = {}
-    # TODO load geometry if not json
+    elif isinstance(geometry, str):
+        geometry = json.loads(geometry)
 
     return {
         'type': 'Feature',

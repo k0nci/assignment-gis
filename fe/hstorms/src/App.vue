@@ -7,9 +7,9 @@
             <b-row class="h-100">
                 <b-col lg="2">
                     <search-point
-                            class="border border-primary rounded mt-3 p-2"/>
+                            class="border border-primary rounded mt-3"/>
                     <country-heatmap
-                            class="border border-primary rounded mt-3 p-2"/>
+                            class="border border-primary rounded mt-3"/>
                 </b-col>
                 <b-col lg="10">
                     <leaflet-map/>
@@ -46,9 +46,5 @@
 
     html, body {
         height: 100%;
-    }
-
-    .leaflet-pane.leaflet-popup-pane {
-        font-size: 1.3em;
     }
 </style>
