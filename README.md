@@ -20,8 +20,13 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: `<fill in>`
+**Application description**: Application displays track of hurricane which has occurred nearest to selected point or occurred in selected area. Application also count occurrence of hurricanes in countries/regions of Central America and displays occurrence map for selected country.
 
-**Data source**: `<fill in>`
+**Data source**:
+- [Open Street Maps](https://www.openstreetmap.org/)
+- [Atlantic hurricane database (HURDAT2)](https://www.nhc.noaa.gov/data/#hurdat)
 
-**Technologies used**: `<fill in>`
+**Technologies used**:
+- [PostgreSQL](https://www.postgresql.org/) + [PostGIS](https://postgis.net/)
+- [Quart](https://gitlab.com/pgjones/quart)
+- [Vue.js](https://vuejs.org/) + [Leaflet](https://leafletjs.com/)
