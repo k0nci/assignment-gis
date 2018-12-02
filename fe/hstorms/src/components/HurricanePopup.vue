@@ -57,14 +57,13 @@
             }
         },
         mounted() {
-            HurricaneService.query('info', {
-                hurricaneId: this.hurricaneId
-            }).then(response => {
-                this.hurricane = response.data;
-                this.hurricane.hurricaneLength /= 1000;
-                this.hurricane.hurricaneLength = this.hurricane
-                    .hurricaneLength.toFixed(1)
-            });
+            HurricaneService.get(`${this.hurricaneId}/info`)
+                .then(response => {
+                    this.hurricane = response.data;
+                    this.hurricane.hurricaneLength /= 1000;
+                    this.hurricane.hurricaneLength = this.hurricane
+                        .hurricaneLength.toFixed(1)
+                });
         }
     }
 </script>

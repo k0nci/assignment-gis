@@ -45,7 +45,7 @@
         methods: {
             search() {
                 this.$store.dispatch(COUNT_OCC_BY_COUNTRY, {
-                    country_id: this.selectedCountry
+                    countryId: this.selectedCountry
                 });
             },
             clearOccurrence() {

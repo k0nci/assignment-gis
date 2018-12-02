@@ -23,6 +23,10 @@ const ApiService = {
 };
 
 export const HurricaneService = {
+    get(slug='') {
+        return ApiService.get('hurricanes', slug);
+    },
+
     query(type, params) {
         return ApiService.query(`hurricanes/${type}`, {
             params: params
