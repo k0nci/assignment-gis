@@ -1,8 +1,10 @@
 <template>
     <div>
-        <h2 class="bg-primary text-white">Search by point</h2>
-        <div class="p-2">
-            <span>Click on map to put marker</span>
+        <h2>Search by point</h2>
+        <div class="pl-2 pr-2 pb-2">
+            <div class="mb-3">
+                <span>Click on map to put marker</span>
+            </div>
             <b-form>
                 <b-form-group :label-cols="3"
                               label="Lat:"
@@ -33,33 +35,23 @@
                 </b-form-group>
 
                 <div>
-                    <div class="form-group row">
-                        <label for="distance"
-                               class="col-sm-3 col-form-label col-form-label-sm">Distance:</label>
-                        <div class="col-sm-9">
-                            {{ distanceKm }}km
+                    <b-form-group :label-col="3"
+                                  label="Distance:"
+                                  horizontal>
+                        <div class="ml-2 mr-2">
+                            <input type="range" class="form-control-range"
+                                   id="distance"
+                                   min="0" max="1000000"
+                                   v-model.number="marker.distance">
                         </div>
-                    </div>
-                    <div class="ml-4 mr-4">
-                        <input type="range" class="form-control-range"
-                               id="distance"
-                               min="0" max="1000000"
-                               v-model.number="marker.distance">
-                    </div>
+                        {{ distanceKm }}km
+                    </b-form-group>
                 </div>
 
-                <b-row class="mt-3">
-                    <b-col>
-                        <b-button type="button" variant="primary"
-                                  @click="search">Search
-                        </b-button>
-                    </b-col>
-                    <b-col>
-                        <b-button type="button" variant="danger"
-                                  @click="clearHurricanes">Clear
-                        </b-button>
-                    </b-col>
-                </b-row>
+                <b-button class="mt-3" type="button" variant="primary"
+                          @click="search">Search
+                </b-button>
+
             </b-form>
         </div>
     </div>
@@ -67,7 +59,6 @@
 
 <script>
     import {mapGetters} from 'vuex';
-    import {CLEAR_HUR_LAYERS} from "../store/mutations.type";
     import {FIND_BY_POINT} from '../store/actions.type';
 
     export default {
@@ -101,9 +92,6 @@
 
                     this.$store.dispatch(FIND_BY_POINT, request);
                 }
-            },
-            clearHurricanes() {
-                this.$store.commit(CLEAR_HUR_LAYERS);
             }
         }
     }

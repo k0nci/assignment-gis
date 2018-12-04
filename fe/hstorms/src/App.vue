@@ -1,15 +1,12 @@
 <template>
     <div id="app" class="h-100">
-        <b-navbar type="light" variant="light">
-            <b-navbar-brand>PDT - HSTORMS</b-navbar-brand>
+        <b-navbar type="light" variant="primary">
+            <b-navbar-brand class="text-white">PDT - HSTORMS</b-navbar-brand>
         </b-navbar>
-        <b-container class="h-100" fluid>
+        <b-container class="app-container" fluid>
             <b-row class="h-100">
                 <b-col lg="2">
-                    <search-point
-                            class="border border-primary rounded mt-3"/>
-                    <country-heatmap
-                            class="border border-primary rounded mt-3"/>
+                    <side-nav-menu class="mt-3"/>
                 </b-col>
                 <b-col lg="10">
                     <leaflet-map/>
@@ -21,21 +18,18 @@
 
 <script>
     import LeafletMap from './components/LeafletMap';
-    import SearchPoint from './components/SearchPoint';
-    import CountryHeatmap from './components/CountryHeatmap';
+    import SideNavMenu from './components/SideNavMenu';
 
     export default {
         name: 'app',
         components: {
             LeafletMap,
-            SearchPoint,
-            CountryHeatmap
+            SideNavMenu,
         }
     }
 </script>
 
 <style>
-
     #app {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -47,4 +41,13 @@
     html, body {
         height: 100%;
     }
+
+    .leaflet-pane.leaflet-popup-pane {
+        font-size: 1.3em;
+    }
+
+    .app-container {
+        height: calc(100vh - 4em);
+    }
+
 </style>

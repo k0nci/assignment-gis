@@ -112,7 +112,7 @@
             },
             url: {
                 type: String,
-                default: 'https://api.mapbox.com/styles/v1/k0nci/cjp5vubh75a4m2sp6h17p8f7a/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiazBuY2kiLCJhIjoiY2pueG1pbW9iMGQ4aTNxbjc2dTV4NjRlNCJ9.UTeCfINkvmtamttjaBcvcA'
+                default: 'https://api.mapbox.com/styles/v1/k0nci/cjpatvp3i0f6u2snwngtxmaw5/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiazBuY2kiLCJhIjoiY2pueG1pbW9iMGQ4aTNxbjc2dTV4NjRlNCJ9.UTeCfINkvmtamttjaBcvcA'
             },
             attribution: {
                 type: String,
@@ -192,10 +192,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     @import '~leaflet/dist/leaflet.css';
 
-    .leaflet-pane.leaflet-popup-pane {
-        font-size: 1.3em;
-    }
 </style>

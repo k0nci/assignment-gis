@@ -1,6 +1,7 @@
 import {
     FIND_BY_POINT,
-    COUNT_OCC_BY_COUNTRY
+    COUNT_OCC_BY_COUNTRY,
+    CLEAR_LAYERS
 } from './actions.type';
 import {
     ADD_HUR_LAYERS,
@@ -45,6 +46,10 @@ const actions = {
             .then(response => {
                 commit(ADD_OCC_LAYERS, response.data);
             });
+    },
+    [CLEAR_LAYERS]({commit}) {
+        commit(CLEAR_HUR_LAYERS);
+        commit(CLEAR_OCC_LAYERS);
     }
 };
 
