@@ -6,7 +6,7 @@ async def find_countries():
                FROM country_polygons cp"""
     data = await database.fetch(query)
 
-    if data is None:
+    if not data:
         return []
 
     def parse_country(country):

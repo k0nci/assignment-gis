@@ -135,7 +135,7 @@ async def find_dwithin(point, distance, year=None):
 async def count_occurrence_in_region(country_id):
     query = """WITH region_occurrence AS (
                     SELECT crp.region_osm_id,
-                           count(hl.name) as occurrence
+                           count(hl.id) as occurrence
                     FROM country_region_polygons crp
                     LEFT JOIN hurricane_lines hl
                         ON st_intersects(crp.region_geom, hl.way)
@@ -186,7 +186,7 @@ async def count_occurrence_in_country(country_id):
 
     data = await database.fetchone(query, country_id)
 
-    if not data:
+    if data is None:
         return to_geojson({})
 
     return to_geojson(
@@ -208,7 +208,7 @@ async def get_hurricane_info(hurricane_id):
 
     data = await database.fetchone(query, hurricane_id)
 
-    if not data:
+    if data is None:
         return {}
     return {
         'hurricaneId': data['hurricane_id'],
