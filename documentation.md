@@ -1,11 +1,3 @@
-*This is a documentation for a fictional project, just to show you what I expect. Notice a few key properties:*
-- *no cover page, really*
-- *no copy&pasted assignment text*
-- *no code samples*
-- *concise, to the point, gets me a quick overview of what was done and how*
-- *I don't really care about the document length*
-- *I used links where appropriate*
-
 # Overview
 
 This application shows historical hurricane track in Atlantic ocean. Most important features are:
@@ -20,7 +12,7 @@ This is it in action:
 The application has 3 separate parts:
 - the client which is a [frontend web application](#frontend) written in [Vue.js](https://vuejs.org/),
 - the [backend application](#backend) written in [Python](https://www.python.org/),
-- [database](#database) with spatial data in [PostgreSQL](https://www.postgresql.org/).
+- [database](#database) with spatial data in [PostgreSQL](https://www.postgresql.org/) with [PostGIS](https://postgis.net/) extension.
 
 The frontend application communicates with backend using a [REST API](#api).
 

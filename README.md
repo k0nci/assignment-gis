@@ -28,5 +28,5 @@ Fill in (either in English, or in Slovak):
 
 **Technologies used**:
 - [PostgreSQL](https://www.postgresql.org/) + [PostGIS](https://postgis.net/)
-- [Quart](https://gitlab.com/pgjones/quart)
+- [Python](https://www.python.org/) + [Quart](https://gitlab.com/pgjones/quart)
 - [Vue.js](https://vuejs.org/) + [Leaflet](https://leafletjs.com/)
