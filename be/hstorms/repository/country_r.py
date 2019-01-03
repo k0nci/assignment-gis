@@ -1,10 +1,10 @@
-import database
+import hstorms.database as db
 
 
 async def find_countries():
     query = """SELECT cp.name, cp.osm_id
                FROM country_polygons cp"""
-    data = await database.fetch(query)
+    data = await db.fetch(query)
 
     if not data:
         return []

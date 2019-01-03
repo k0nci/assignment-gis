@@ -1,11 +1,12 @@
 from collections import defaultdict
 
-from util import to_geojson, to_geojson_collection
-import database
+from hstorms.util.geojson import to_geojson
+from hstorms.util.geojson import to_geojson_collection
+import hstorms.database as db
 
 
 async def find_closest(point, year=None):
-    if year:
+    if year is not None:
         query = """WITH point AS (
                       SELECT st_setsrid(st_point($1, $2), 4326)::geography as way),
                          line_distance AS (
@@ -28,7 +29,7 @@ async def find_closest(point, year=None):
                     JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
                     JOIN hurricanes h ON h.id = hpl.hurricane_id"""
 
-        data = await database.fetch(query, point['lon'], point['lat'], year)
+        data = await db.fetch(query, point['lon'], point['lat'], year)
     else:
         query = """WITH point AS (
                       SELECT st_setsrid(st_point($1, $2), 4326)::geography as way),
@@ -51,7 +52,7 @@ async def find_closest(point, year=None):
                     JOIN min_distance_id md ON md.hurricane_id = hpl.hurricane_id
                     JOIN hurricanes h ON h.id = hpl.hurricane_id"""
 
-        data = await database.fetch(query, point['lon'], point['lat'])
+        data = await db.fetch(query, point['lon'], point['lat'])
 
     features = [to_geojson(status=x['status'],
                            geometry=x['geojson'],
@@ -65,7 +66,7 @@ async def find_closest(point, year=None):
 
 
 async def find_dwithin(point, distance, year=None):
-    if year:
+    if year is not None:
         query = """WITH point AS (
                       SELECT st_setsrid(st_point($1, $2), 4326)::geography way),
                          in_distance AS (
@@ -87,7 +88,7 @@ async def find_dwithin(point, distance, year=None):
                     JOIN hurricanes h ON h.id = hpl.hurricane_id
                     CROSS JOIN point p"""
 
-        data = await database.fetch(query,
+        data = await db.fetch(query,
                                     point['lon'], point['lat'],
                                     distance, year)
 
@@ -112,7 +113,7 @@ async def find_dwithin(point, distance, year=None):
                     JOIN hurricanes h ON h.id = hpl.hurricane_id
                     CROSS JOIN point p"""
 
-        data = await database.fetch(query,
+        data = await db.fetch(query,
                                     point['lon'], point['lat'], distance)
 
     grouped = defaultdict(list)
@@ -151,7 +152,7 @@ async def count_occurrence_in_region(country_id):
                JOIN country_region_polygons cr
                     ON ro.region_osm_id = cr.region_osm_id"""
 
-    data = await database.fetch(query, country_id)
+    data = await db.fetch(query, country_id)
 
     if not data:
         return to_geojson_collection([])
@@ -184,7 +185,7 @@ async def count_occurrence_in_country(country_id):
                 FROM country_polygons cp
                 JOIN occurrence o ON o.osm_id = cp.osm_id;"""
 
-    data = await database.fetchone(query, country_id)
+    data = await db.fetchone(query, country_id)
 
     if data is None:
         return to_geojson({})
@@ -206,7 +207,7 @@ async def get_hurricane_info(hurricane_id):
                FROM hurricane_lines hl
                WHERE hl.hurricane_id = $1"""
 
-    data = await database.fetchone(query, hurricane_id)
+    data = await db.fetchone(query, hurricane_id)
 
     if data is None:
         return {}

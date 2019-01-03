@@ -2,8 +2,8 @@ import asyncpg
 from quart import Quart
 from quart_cors import cors
 
-from config import Configuration
-from util import DatetimeJSONEncoder
+from hstorms.config import Configuration
+from hstorms.util.encoder import DatetimeJSONEncoder
 
 
 def create_app():
@@ -12,12 +12,17 @@ def create_app():
 
     @app.before_first_request
     async def create_db():
-        dsn = Configuration.HSTORMSDB_URI
-        app.pool = await asyncpg.create_pool(dsn, max_size=20)
+        app.pool = await asyncpg.create_pool(Configuration.HSTORMSDB_URI,
+                                             max_size=20)
 
     register_blueprints(app)
     register_extensions(app)
     register_encoders(app)
+
+    @app.route('/')
+    async def root():
+        return 'hstorms-api'
+
     return app
 
 

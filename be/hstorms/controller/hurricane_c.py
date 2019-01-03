@@ -1,10 +1,9 @@
 from quart import Blueprint
-from quart import abort
 from quart import jsonify
 from quart import request
 
-from repository import hurricane_r
-from util import contains_params
+from hstorms.repository import hurricane_r
+from hstorms.util import check_params
 
 blueprint = Blueprint('hurricanes', __name__)
 
@@ -12,8 +11,7 @@ blueprint = Blueprint('hurricanes', __name__)
 @blueprint.route('/point', methods=['GET'])
 async def get_by_point():
     required_params = ['lat', 'lon']
-    if not contains_params(request, required_params):
-        abort(400)
+    check_params(request, required_params)
 
     point = {
         'lat': float(request.args['lat']),
@@ -33,8 +31,7 @@ async def get_by_point():
 @blueprint.route('/occurrence', methods=['GET'])
 async def count_occurrence_for_country():
     required_params = ['countryId']
-    if not contains_params(request, required_params):
-        abort(400)
+    check_params(request, required_params)
 
     country_id = int(request.args['countryId'])
     data = await hurricane_r.count_occurrence_in_region(country_id)

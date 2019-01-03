@@ -1,7 +1,7 @@
 from quart import Blueprint
 from quart import jsonify
 
-from repository import country_r
+from hstorms.repository import country_r
 
 blueprint = Blueprint('countries', __name__)
 
